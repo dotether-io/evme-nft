@@ -27,16 +27,19 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 export default {
   solidity: "0.8.9",
   defaultNetwork: "hardhat",
-  networks: {
-    matic: {
-      url: API_URL,
-      accounts: [PRIVATE_KEY_1, PRIVATE_KEY_2],
-    },
-    hardhat: {
-      gasPrice: 875000000,
-      blockGasLimit: 100000000,
-    },
-  },
+  networks: API_URL
+    ? {
+        matic: {
+          url: API_URL,
+          accounts: [PRIVATE_KEY_1, PRIVATE_KEY_2],
+        },
+      }
+    : {
+        hardhat: {
+          gasPrice: 875000000,
+          blockGasLimit: 100000000,
+        },
+      },
   etherscan: {
     apiKey: ETHERSCAN_API,
   },
