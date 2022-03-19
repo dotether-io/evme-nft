@@ -14,11 +14,17 @@ const baseURI = "uri/";
 const tier1 = 1;
 const tier2 = 2;
 const tier3 = 3;
+const tier4 = 4;
+const tier5 = 5;
 
 const tier6 = 6;
+const tier7 = 7;
+const tier8 = 8;
+const tier9 = 9;
+const tier10 = 10;
 
 // T1 - 10 = 10
-const RARE_RANGE = 10;
+const RARE_RANGE = 5;
 // T6 - T10 limit only 1
 const RARE_LIMIT_START = 6;
 
@@ -33,6 +39,10 @@ beforeEach(async () => {
 describe("Contract", function () {
   it("Should deployed and contract address is defined.", async function () {
     expect(nft.address).toBeDefined();
+  });
+
+  it("Should display EVME", async function () {
+    expect(await nft.symbol()).toEqual("EVME");
   });
 
   it("Should holed baseURI", async function () {
@@ -105,6 +115,15 @@ describe("Minting process", function () {
     );
   });
 
+  it("Minting tier 6, should failed", async function () {
+    // check invalid tier 0
+    await expect(nft.ownerMint(client.address, 6)).rejects.toMatchObject(
+      new Error(
+        `Transaction reverted: function was called with incorrect parameters`
+      )
+    );
+  });
+
   describe("Minting tier 1", function () {
     describe("Before minting tier 1", function () {
       it("Should not let the client owned any token before minting", async function () {
@@ -157,228 +176,215 @@ describe("Minting process", function () {
     });
   });
 
-  it("Minting tier 1", async function () {
-    const mintedTx = await nft.ownerMint(client.address, tier1);
-    await mintedTx.wait();
-    // check tierCount increment
-    const tierCount = await nft.tierCounts(tier1);
-    expect(tierCount.toNumber()).toEqual(1);
-
-    // check token of owner
-    const tokens = await nft.tokensOfOwner(client.address);
-    expect(tokens[0]).toBeDefined();
-    expect(tokens[0].toNumber()).toEqual(0);
-
-    const tokenIndex = tokens[0].toNumber();
-
-    // check owner of token
-    const ownerTier1 = await nft.ownerOf(tokenIndex);
-    expect(ownerTier1).toEqual(client.address);
-
-    // check token tier
-    const token = await nft.tokenTiers(tokenIndex);
-    expect(token).toEqual(tier1);
-
-    // check token uri
-    const tier1URI = await nft.tokenURI(tokenIndex);
-    expect(tier1URI.replace(baseURI, "")).toEqual("t" + tier1);
-  });
-
-  it("Minting tier 2", async function () {
-    // check invalid tier keyword
-    await expect(
-      nft.ownerMint(client.address, tier2 + "abc")
-    ).rejects.toMatchObject(
-      new Error(
-        `invalid BigNumber string (argument="value", value="2abc", code=INVALID_ARGUMENT, version=bignumber/5.5.0)`
-      )
-    );
-    const mintedTx = await nft.ownerMint(client.address, tier2);
-
-    // wait until the transaction is mined
-    await mintedTx.wait();
-
-    // check tierCount increment
-    const tierCount = await nft.tierCounts(tier2);
-    expect(tierCount.toNumber()).toEqual(1);
-
-    // check token of owner
-    const tokens = await nft.tokensOfOwner(client.address);
-    expect(tokens[0]).toBeDefined();
-    expect(tokens[0].toNumber()).toEqual(0);
-
-    const tokenIndex = tokens[0].toNumber();
-
-    // check owner of token
-    const ownerTier1 = await nft.ownerOf(tokenIndex);
-    expect(ownerTier1).toEqual(client.address);
-
-    // check token tier
-    const token = await nft.tokenTiers(tokenIndex);
-    expect(token).toEqual(tier2);
-
-    // check token uri
-    const tier2URI = await nft.tokenURI(tokenIndex);
-    expect(tier2URI.replace(baseURI, "")).toEqual("t" + tier2);
-  });
-
-  it("Minting tier 3", async function () {
-    // check invalid tier keyword
-    await expect(
-      nft.ownerMint(client.address, tier3 + "abc")
-    ).rejects.toMatchObject(
-      new Error(
-        `invalid BigNumber string (argument="value", value="3abc", code=INVALID_ARGUMENT, version=bignumber/5.5.0)`
-      )
-    );
-    const mintedTx = await nft.ownerMint(client.address, tier3);
-
-    // wait until the transaction is mined
-    await mintedTx.wait();
-
-    // check tierCount increment
-    const tierCount = await nft.tierCounts(tier3);
-    expect(tierCount.toNumber()).toEqual(1);
-
-    // check token of owner
-    const tokens = await nft.tokensOfOwner(client.address);
-    expect(tokens[0]).toBeDefined();
-    expect(tokens[0].toNumber()).toEqual(0);
-
-    const tokenIndex = tokens[0].toNumber();
-
-    // check owner of token
-    const ownerTier1 = await nft.ownerOf(tokenIndex);
-    expect(ownerTier1).toEqual(client.address);
-
-    // check token tier
-    const token = await nft.tokenTiers(tokenIndex);
-    expect(token).toEqual(tier3);
-
-    // check token uri
-    const tier3URI = await nft.tokenURI(tokenIndex);
-    expect(tier3URI.replace(baseURI, "")).toEqual("t" + tier3);
-  });
-
-  describe("Minting tier 6", function () {
-    describe("Before minting tier 6", function () {
+  describe("Minting tier 2", function () {
+    describe("Before minting tier 2", function () {
       it("Should not let the client owned any token before minting", async function () {
         const tokens = await nft.tokensOfOwner(client.address);
         expect(tokens).toBeDefined();
         expect(tokens[0]).toBeUndefined();
       });
 
-      it("Should count t6 token as 0 before minting", async function () {
+      it("Should count t2 token as 0 before minting", async function () {
         // check tierCount before mint
-        const count = await nft.tierCounts(tier6);
+        const count = await nft.tierCounts(tier2);
         expect(count.toNumber()).toEqual(0);
       });
     });
 
-    describe("After minting tier 6", function () {
+    describe("After minting tier 2", function () {
       beforeEach(async () => {
-        const tx = await nft.ownerMint(client.address, tier6);
+        const tx = await nft.ownerMint(client.address, tier2);
         await tx.wait();
       });
 
-      it("Should increment t6 token count to be 6 after minting", async function () {
+      it("Should increment t2 token count to be 1 after minting", async function () {
         // check tierCount after mint
-        const count = await nft.tierCounts(tier6);
+        const count = await nft.tierCounts(tier2);
         expect(count.toNumber()).toEqual(1);
       });
 
-      it("Should successfully send t6 token to client", async function () {
+      it("Should successfully send t2 token to client", async function () {
         // check tierCount after mint
         const tokens = await nft.tokensOfOwner(client.address);
         expect(tokens[0]).toBeDefined();
         expect(tokens[0].toNumber()).toEqual(0);
       });
 
-      it("Should give t6 token ownership to client", async function () {
+      it("Should give t2 token ownership to client", async function () {
         // check owner of token
         const owner = await nft.ownerOf(0);
         expect(owner).toEqual(client.address);
 
         // check token tier
         const token = await nft.tokenTiers(0);
-        expect(token).toEqual(tier6);
+        expect(token).toEqual(tier2);
       });
 
-      it("Should return the tokenURI of t6 token", async function () {
+      it("Should return the tokenURI of t2 token", async function () {
         // check token uri
         const uri = await nft.tokenURI(0);
-        expect(uri.replace(baseURI, "")).toEqual("t" + tier6);
-      });
-
-      it("Should reject when exceeded RARE_LIMIT", async function () {
-        // check exceed rare limit
-        try {
-          await nft.ownerMint(client.address, tier6);
-        } catch (error) {
-          expect(error).toMatchObject(
-            new Error(
-              `VM Exception while processing transaction: reverted with reason string 'Exceed Rare Limit.'`
-            )
-          );
-          return;
-        }
-        throw new Error("Should not reached this line.");
+        expect(uri.replace(baseURI, "")).toEqual("t" + tier2);
       });
     });
   });
 
-  it("Minting tier 6.1", async function () {
-    // check invalid tier keyword
-    await expect(
-      nft.ownerMint(client.address, tier6 + "abc")
-    ).rejects.toMatchObject(
-      new Error(
-        `invalid BigNumber string (argument="value", value="6abc", code=INVALID_ARGUMENT, version=bignumber/5.5.0)`
-      )
-    );
-    const mintedTx = await nft.ownerMint(client.address, tier6);
+  describe("Minting tier 3", function () {
+    describe("Before minting tier 3", function () {
+      it("Should not let the client owned any token before minting", async function () {
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens).toBeDefined();
+        expect(tokens[0]).toBeUndefined();
+      });
 
-    // wait until the transaction is mined
-    await mintedTx.wait();
+      it("Should count t3 token as 0 before minting", async function () {
+        // check tierCount before mint
+        const count = await nft.tierCounts(tier3);
+        expect(count.toNumber()).toEqual(0);
+      });
+    });
 
-    // check tierCount increment
-    const tierCount = await nft.tierCounts(tier6);
-    expect(tierCount.toNumber()).toEqual(1);
+    describe("After minting tier 3", function () {
+      beforeEach(async () => {
+        const tx = await nft.ownerMint(client.address, tier3);
+        await tx.wait();
+      });
 
-    // check token of owner
-    const tokens = await nft.tokensOfOwner(client.address);
-    expect(tokens[0]).toBeDefined();
-    expect(tokens[0].toNumber()).toEqual(0);
+      it("Should increment t3 token count to be 1 after minting", async function () {
+        // check tierCount after mint
+        const count = await nft.tierCounts(tier3);
+        expect(count.toNumber()).toEqual(1);
+      });
 
-    const tokenIndex = tokens[0].toNumber();
+      it("Should successfully send t3 token to client", async function () {
+        // check tierCount after mint
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens[0]).toBeDefined();
+        expect(tokens[0].toNumber()).toEqual(0);
+      });
 
-    // check owner of token
-    const ownerTier1 = await nft.ownerOf(tokenIndex);
-    expect(ownerTier1).toEqual(client.address);
+      it("Should give t3 token ownership to client", async function () {
+        // check owner of token
+        const owner = await nft.ownerOf(0);
+        expect(owner).toEqual(client.address);
 
-    // check token tier
-    const token = await nft.tokenTiers(tokenIndex);
-    expect(token).toEqual(tier6);
+        // check token tier
+        const token = await nft.tokenTiers(0);
+        expect(token).toEqual(tier3);
+      });
 
-    // check token uri
-    const tier6URI = await nft.tokenURI(tokenIndex);
-    expect(tier6URI.replace(baseURI, "")).toEqual("t" + tier6);
-
-    // check exceed rare limit
-    try {
-      await nft.ownerMint(client.address, tier6);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          `VM Exception while processing transaction: reverted with reason string 'Exceed Rare Limit.'`
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
+      it("Should return the tokenURI of t3 token", async function () {
+        // check token uri
+        const uri = await nft.tokenURI(0);
+        expect(uri.replace(baseURI, "")).toEqual("t" + tier3);
+      });
+    });
   });
 
-  it("Minting tier 1-10", async function () {
+  describe("Minting tier 4", function () {
+    describe("Before minting tier 4", function () {
+      it("Should not let the client owned any token before minting", async function () {
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens).toBeDefined();
+        expect(tokens[0]).toBeUndefined();
+      });
+
+      it("Should count t4 token as 0 before minting", async function () {
+        // check tierCount before mint
+        const count = await nft.tierCounts(tier4);
+        expect(count.toNumber()).toEqual(0);
+      });
+    });
+
+    describe("After minting tier 4", function () {
+      beforeEach(async () => {
+        const tx = await nft.ownerMint(client.address, tier4);
+        await tx.wait();
+      });
+
+      it("Should increment t4 token count to be 1 after minting", async function () {
+        // check tierCount after mint
+        const count = await nft.tierCounts(tier4);
+        expect(count.toNumber()).toEqual(1);
+      });
+
+      it("Should successfully send t4 token to client", async function () {
+        // check tierCount after mint
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens[0]).toBeDefined();
+        expect(tokens[0].toNumber()).toEqual(0);
+      });
+
+      it("Should give t4 token ownership to client", async function () {
+        // check owner of token
+        const owner = await nft.ownerOf(0);
+        expect(owner).toEqual(client.address);
+
+        // check token tier
+        const token = await nft.tokenTiers(0);
+        expect(token).toEqual(tier4);
+      });
+
+      it("Should return the tokenURI of t4 token", async function () {
+        // check token uri
+        const uri = await nft.tokenURI(0);
+        expect(uri.replace(baseURI, "")).toEqual("t" + tier4);
+      });
+    });
+  });
+
+  describe("Minting tier 5", function () {
+    describe("Before minting tier 5", function () {
+      it("Should not let the client owned any token before minting", async function () {
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens).toBeDefined();
+        expect(tokens[0]).toBeUndefined();
+      });
+
+      it("Should count t5 token as 0 before minting", async function () {
+        // check tierCount before mint
+        const count = await nft.tierCounts(tier5);
+        expect(count.toNumber()).toEqual(0);
+      });
+    });
+
+    describe("After minting tier 5", function () {
+      beforeEach(async () => {
+        const tx = await nft.ownerMint(client.address, tier5);
+        await tx.wait();
+      });
+
+      it("Should increment t5 token count to be 1 after minting", async function () {
+        // check tierCount after mint
+        const count = await nft.tierCounts(tier5);
+        expect(count.toNumber()).toEqual(1);
+      });
+
+      it("Should successfully send t5 token to client", async function () {
+        // check tierCount after mint
+        const tokens = await nft.tokensOfOwner(client.address);
+        expect(tokens[0]).toBeDefined();
+        expect(tokens[0].toNumber()).toEqual(0);
+      });
+
+      it("Should give t5 token ownership to client", async function () {
+        // check owner of token
+        const owner = await nft.ownerOf(0);
+        expect(owner).toEqual(client.address);
+
+        // check token tier
+        const token = await nft.tokenTiers(0);
+        expect(token).toEqual(tier5);
+      });
+
+      it("Should return the tokenURI of t5 token", async function () {
+        // check token uri
+        const uri = await nft.tokenURI(0);
+        expect(uri.replace(baseURI, "")).toEqual("t" + tier5);
+      });
+    });
+  });
+
+  it("Minting tier 1-5 (consecutive case)", async function () {
     for (let tier = 1; tier <= RARE_RANGE; tier++) {
       // check invalid tier keyword
       await expect(
@@ -415,210 +421,91 @@ describe("Minting process", function () {
       // check token uri
       const tierURI = await nft.tokenURI(tokenIndex);
       expect(tierURI.replace(baseURI, "")).toEqual("t" + tier);
-
-      if (tier >= RARE_LIMIT_START) {
-        // check exceed rare limit
-        try {
-          await nft.ownerMint(client.address, tier);
-        } catch (error) {
-          expect(error).toMatchObject(
-            new Error(
-              `VM Exception while processing transaction: reverted with reason string 'Exceed Rare Limit.'`
-            )
-          );
-          continue;
-        }
-        throw new Error("Should not reached this line.");
-      }
     }
   });
 });
 
-describe("Campaign", function () {
-  it("Should create campaign success", async function () {
-    const mintedTx = await nft.createCampaign("campaign", "description");
-
-    // wait until the transaction is mined
-    await mintedTx.wait();
-
-    const campaignIndex = await nft.campaignIndex();
-    expect(campaignIndex.toNumber()).toEqual(1);
-
-    const index = campaignIndex.toNumber() - 1;
-
-    const campaign = await nft.campaignByIndex(index);
-
-    expect(campaign.name).toEqual("campaign");
-    expect(campaign.description).toEqual("description");
-    expect(campaign.complete).toEqual(false);
-    expect(campaign.redemptionIndex.toNumber()).toEqual(0);
+describe("Black List process", function () {
+  describe("Before Black List", function () {
+    it("Should not mark blacklist of any token before minting", async function () {
+      const token = await nft.tokenBlackLists(0);
+      expect(token).toEqual(false);
+    });
   });
 
-  it("Can set campaign status (true or false)", async function () {
-    const mintedTx = await nft.createCampaign("campaign", "description");
-
-    // wait until the transaction is mined
-    await mintedTx.wait();
-
-    const setStatusTx = await nft.setCampaignStatus(0, true);
-    await setStatusTx.wait();
-
-    const campaignComplete = await nft.campaignByIndex(0);
-    expect(campaignComplete.complete).toEqual(true);
-
-    const setStatusTx2 = await nft.setCampaignStatus(0, false);
-    await setStatusTx2.wait();
-
-    const campaignInComplete = await nft.campaignByIndex(0);
-    expect(campaignInComplete.complete).toEqual(false);
-  });
-
-  it("Should failed create campaign when creator is not an owner", async function () {
-    try {
-      await nft.connect(client).createCampaign("campaign", "description");
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
-});
-
-describe("Redemption", function () {
-  beforeEach(async () => {
-    // creating campaign
-    const cratedCampaignTx = await nft.createCampaign(
-      "campaign",
-      "description"
-    );
-    await cratedCampaignTx.wait();
-
-    // mint to client
-    const mintedTx = await nft.ownerMint(client.address, tier1);
-    await mintedTx.wait();
-  });
-
-  it("Should not have any redemption in the given campaign", async function () {
-    const campaign = await nft.campaignByIndex(0);
-    expect(campaign.redemptionIndex.toNumber()).toEqual(0);
-  });
-
-  it("Should return falsy redeem status of client t1 token", async function () {
-    const status = await nft.connect(client).campaignRedemptionByIndex(0, 0);
-    expect(status).toEqual(false);
-  });
-
-  it("Should let the client call to check the redeem status of their token", async function () {
-    const status = await nft.campaignRedemptionByIndex(0, 0);
-    expect(status).toEqual(false);
-  });
-
-  it("Cannot check redeem status by others", async function () {
-    try {
-      await nft.connect(other).campaignRedemptionByIndex(0, 0);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'You are not token owner or contract owner.'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
-
-  describe("Redeem token 1", function () {
+  describe("After minting tier 1", function () {
     beforeEach(async () => {
-      const tx = await nft.connect(client).redeemByCampaignIndex(0, 0);
-      await tx.wait();
+      const tx1 = await nft.ownerMint(client.address, tier1);
+      await tx1.wait();
+
+      const tx2 = await nft.ownerMint(client.address, tier2);
+      await tx2.wait();
+
+      const tx3 = await nft.ownerMint(client.address, tier3);
+      await tx3.wait();
+
+      const blTx = await nft.ownerMarkBlackList(1, true);
+      await blTx.wait();
     });
-    it("Should successfully redeem by token owner", async function () {
-      const status = await nft.connect(client).campaignRedemptionByIndex(0, 0);
-      expect(status).toEqual(true);
+
+    it("Should mark token id 1 as a black list", async function () {
+      const token = await nft.tokenBlackLists(1);
+      expect(token).toEqual(true);
     });
 
-    it("Should increment redemption count", async function () {
-      // check redemption index
-      const campaign = await nft.campaignByIndex(0);
-      expect(campaign.redemptionIndex.toNumber()).toEqual(1);
+    it("Should not mark token id 0, 2 as a black list", async function () {
+      const token0 = await nft.tokenBlackLists(0);
+      expect(token0).toEqual(false);
+
+      const token2 = await nft.tokenBlackLists(2);
+      expect(token2).toEqual(false);
     });
-  });
 
-  it("Should redeem failed when redeemer is not the owner", async function () {
-    try {
-      await nft.redeemByCampaignIndex(0, 0);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'You are not the owner.'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
+    it("Should mark token id 1 twice", async function () {
+      const mark1 = await nft.tokenBlackLists(1);
+      expect(mark1).toEqual(true);
 
-  it("Should redeem failed when redeem other token", async function () {
-    try {
-      await nft.connect(client).redeemByCampaignIndex(0, 1);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'ERC721: owner query for nonexistent token'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
+      const mark2 = await nft.tokenBlackLists(1);
+      expect(mark2).toEqual(true);
+    });
 
-  it("Should redeem failed when campaign is over", async function () {
-    const campaignTx = await nft.setCampaignStatus(0, true);
-    await campaignTx.wait();
-    try {
-      await nft.connect(client).redeemByCampaignIndex(0, 0);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'Campaign not exist.'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
+    it("Should revert mark token id 1", async function () {
+      const token = await nft.tokenBlackLists(1);
+      expect(token).toEqual(true);
 
-  it("Should redeem failed when duplicate redeem", async function () {
-    const redeemTx = await nft.connect(client).redeemByCampaignIndex(0, 0);
-    await redeemTx.wait();
-    try {
-      await nft.connect(client).redeemByCampaignIndex(0, 0);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'Already redeem.'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
-  });
+      const blTx = await nft.ownerMarkBlackList(1, false);
+      await blTx.wait();
 
-  it("Should redeem failed when campaign not found", async function () {
-    try {
-      await nft.connect(client).redeemByCampaignIndex(1, 0);
-    } catch (error) {
-      expect(error).toMatchObject(
-        new Error(
-          "VM Exception while processing transaction: reverted with reason string 'Campaign not exist.'"
-        )
-      );
-      return;
-    }
-    throw new Error("Should not reached this line.");
+      const _token = await nft.tokenBlackLists(1);
+      expect(_token).toEqual(false);
+    });
+
+    it("Should mark failed when marker is not an owner.", async function () {
+      try {
+        await nft.connect(client).ownerMarkBlackList(2, true);
+      } catch (error) {
+        expect(error).toMatchObject(
+          new Error(
+            `VM Exception while processing transaction: reverted with reason string 'Ownable: caller is not the owner'`
+          )
+        );
+        return;
+      }
+      throw new Error("Should not reached this line.");
+    });
+
+    it("Should mark failed when token ID is not exist.", async function () {
+      try {
+        await nft.ownerMarkBlackList(99, true);
+      } catch (error) {
+        expect(error).toMatchObject(
+          new Error(
+            `VM Exception while processing transaction: reverted with reason string 'ERC721Metadata: URI query for nonexistent token'`
+          )
+        );
+        return;
+      }
+      throw new Error("Should not reached this line.");
+    });
   });
 });

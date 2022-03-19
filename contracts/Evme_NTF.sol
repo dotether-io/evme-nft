@@ -12,9 +12,7 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
 
     Counters.Counter private _tokenIds;
 
-    uint public constant RARE_LIMIT = 1;
-
-    enum TierList{ t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 }
+    enum TierList{ t0, t1, t2, t3, t4, t5 }
     mapping(TierList => uint) public tierCounts;
     mapping(uint => TierList) public tokenTiers;
     mapping(uint => bool) public tokenBlackLists;
@@ -36,10 +34,6 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
     function ownerMint(address receiver, TierList tier) public onlyOwner returns (uint tokenId) {
         require(tier != TierList.t0 , "Invalid Tier.");
 
-        if (uint8(tier) > 5) {
-          require(tierCounts[tier] < RARE_LIMIT , "Exceed Rare Limit.");
-        }
-
         uint newTokenID = _tokenIds.current();
         _safeMint(receiver, newTokenID);
 
@@ -54,10 +48,10 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
         return newTokenID;
     }
 
-    function ownerMarkBlackList(uint256 tokenId) public onlyOwner {
+    function ownerMarkBlackList(uint256 tokenId, bool mark) public onlyOwner {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-        tokenBlackLists[tokenId] = true;
+        tokenBlackLists[tokenId] = mark;
     }
 
      function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
@@ -70,11 +64,6 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
         if (uint8(tokenTiers[tokenId]) == 3) tierString = "t3";
         if (uint8(tokenTiers[tokenId]) == 4) tierString = "t4";
         if (uint8(tokenTiers[tokenId]) == 5) tierString = "t5";
-        if (uint8(tokenTiers[tokenId]) == 6) tierString = "t6";
-        if (uint8(tokenTiers[tokenId]) == 7) tierString = "t7";
-        if (uint8(tokenTiers[tokenId]) == 8) tierString = "t8";
-        if (uint8(tokenTiers[tokenId]) == 9) tierString = "t9";
-        if (uint8(tokenTiers[tokenId]) == 10) tierString = "t10";
 
         string memory baseURI = _baseURI();
         return bytes(baseURI).length > 0

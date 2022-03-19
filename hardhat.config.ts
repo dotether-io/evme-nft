@@ -30,7 +30,7 @@ export default {
   networks: {
     matic: {
       url: API_URL,
-      accounts: [PRIVATE_KEY_3],
+      accounts: [PRIVATE_KEY_1, PRIVATE_KEY_2],
     },
     hardhat: {
       gasPrice: 875000000,
