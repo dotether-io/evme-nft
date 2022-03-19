@@ -164,7 +164,7 @@ describe("Minting process", function () {
         expect(owner).toEqual(client.address);
 
         // check token tier
-        const token = await nft.tokenTiers(0);
+        const token = await nft.tokenIdToTier(0);
         expect(token).toEqual(tier1);
       });
 
@@ -216,7 +216,7 @@ describe("Minting process", function () {
         expect(owner).toEqual(client.address);
 
         // check token tier
-        const token = await nft.tokenTiers(0);
+        const token = await nft.tokenIdToTier(0);
         expect(token).toEqual(tier2);
       });
 
@@ -268,7 +268,7 @@ describe("Minting process", function () {
         expect(owner).toEqual(client.address);
 
         // check token tier
-        const token = await nft.tokenTiers(0);
+        const token = await nft.tokenIdToTier(0);
         expect(token).toEqual(tier3);
       });
 
@@ -320,7 +320,7 @@ describe("Minting process", function () {
         expect(owner).toEqual(client.address);
 
         // check token tier
-        const token = await nft.tokenTiers(0);
+        const token = await nft.tokenIdToTier(0);
         expect(token).toEqual(tier4);
       });
 
@@ -372,7 +372,7 @@ describe("Minting process", function () {
         expect(owner).toEqual(client.address);
 
         // check token tier
-        const token = await nft.tokenTiers(0);
+        const token = await nft.tokenIdToTier(0);
         expect(token).toEqual(tier5);
       });
 
@@ -415,7 +415,7 @@ describe("Minting process", function () {
       expect(ownerTier).toEqual(client.address);
 
       // check token tier
-      const token = await nft.tokenTiers(tokenIndex);
+      const token = await nft.tokenIdToTier(tokenIndex);
       expect(token).toEqual(tier);
 
       // check token uri
@@ -507,5 +507,21 @@ describe("Black List process", function () {
       }
       throw new Error("Should not reached this line.");
     });
+  });
+});
+
+describe("Transfer process", function () {
+  beforeEach(async () => {
+    const tx = await nft.ownerMint(client.address, tier1);
+    await tx.wait();
+  });
+  it("Should transfer from client(not contract owner) to others", async function () {
+    const tx = await nft
+      .connect(client)
+      .transferFrom(client.address, other.address, 0);
+    await tx.wait();
+
+    const address = await nft.ownerOf(0);
+    expect(address).toEqual(other.address);
   });
 });

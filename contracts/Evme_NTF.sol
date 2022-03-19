@@ -12,9 +12,9 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
 
     Counters.Counter private _tokenIds;
 
-    enum TierList{ t0, t1, t2, t3, t4, t5 }
-    mapping(TierList => uint) public tierCounts;
-    mapping(uint => TierList) public tokenTiers;
+    enum Tier{ t0, t1, t2, t3, t4, t5 }
+    mapping(Tier => uint) public tierCounts;
+    mapping(uint => Tier) public tokenIdToTier;
     mapping(uint => bool) public tokenBlackLists;
 
     string public baseTokenURI;
@@ -31,14 +31,14 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
         baseTokenURI = _baseTokenURI;
     }
 
-    function ownerMint(address receiver, TierList tier) public onlyOwner returns (uint tokenId) {
-        require(tier != TierList.t0 , "Invalid Tier.");
+    function ownerMint(address receiver, Tier tier) public onlyOwner returns (uint tokenId) {
+        require(tier != Tier.t0 , "Invalid Tier.");
 
         uint newTokenID = _tokenIds.current();
         _safeMint(receiver, newTokenID);
 
         // save token tier list
-        tokenTiers[newTokenID] = tier;
+        tokenIdToTier[newTokenID] = tier;
 
         // tier count increment
         tierCounts[tier]++;
@@ -59,11 +59,11 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
 
         string memory tierString;
 
-        if (uint8(tokenTiers[tokenId]) == 1) tierString = "t1";
-        if (uint8(tokenTiers[tokenId]) == 2) tierString = "t2";
-        if (uint8(tokenTiers[tokenId]) == 3) tierString = "t3";
-        if (uint8(tokenTiers[tokenId]) == 4) tierString = "t4";
-        if (uint8(tokenTiers[tokenId]) == 5) tierString = "t5";
+        if (uint8(tokenIdToTier[tokenId]) == 1) tierString = "t1";
+        if (uint8(tokenIdToTier[tokenId]) == 2) tierString = "t2";
+        if (uint8(tokenIdToTier[tokenId]) == 3) tierString = "t3";
+        if (uint8(tokenIdToTier[tokenId]) == 4) tierString = "t4";
+        if (uint8(tokenIdToTier[tokenId]) == 5) tierString = "t5";
 
         string memory baseURI = _baseURI();
         return bytes(baseURI).length > 0
