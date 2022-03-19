@@ -41,8 +41,8 @@ describe("Contract", function () {
     expect(nft.address).toBeDefined();
   });
 
-  it("Should display EVME", async function () {
-    expect(await nft.symbol()).toEqual("EVME");
+  it("Should display EVme1", async function () {
+    expect(await nft.symbol()).toEqual("EVme1");
   });
 
   it("Should holed baseURI", async function () {

@@ -19,7 +19,7 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
 
     string public baseTokenURI;
 
-    constructor(string memory baseURI) ERC721("Evme NFT", "EVME") {
+    constructor(string memory baseURI) ERC721("Evme NFT", "EVme1") {
         setBaseURI(baseURI);
     }
 
@@ -31,7 +31,7 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
         baseTokenURI = _baseTokenURI;
     }
 
-    function ownerMint(address receiver, Tier tier) public onlyOwner returns (uint tokenId) {
+    function ownerMint(address receiver, Tier tier) external onlyOwner returns (uint tokenId) {
         require(tier != Tier.t0 , "Invalid Tier.");
 
         uint newTokenID = _tokenIds.current();
@@ -48,7 +48,7 @@ contract EvmeNFT is ERC721Enumerable, Ownable {
         return newTokenID;
     }
 
-    function ownerMarkBlackList(uint256 tokenId, bool mark) public onlyOwner {
+    function ownerMarkBlackList(uint256 tokenId, bool mark) external onlyOwner {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
         tokenBlackLists[tokenId] = mark;
