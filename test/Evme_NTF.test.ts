@@ -1,6 +1,5 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { Signer, utils, Wallet } from "ethers";
 import { EvmeNFT, EvmeNFTFactory } from "../typechain";
 
 jest.setTimeout(50000);
@@ -17,16 +16,8 @@ const tier3 = 3;
 const tier4 = 4;
 const tier5 = 5;
 
-const tier6 = 6;
-const tier7 = 7;
-const tier8 = 8;
-const tier9 = 9;
-const tier10 = 10;
-
-// T1 - 10 = 10
+// T1 - T5 = 5
 const RARE_RANGE = 5;
-// T6 - T10 limit only 1
-const RARE_LIMIT_START = 6;
 
 beforeEach(async () => {
   const signers = await ethers.getSigners();
