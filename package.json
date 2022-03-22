@@ -11,7 +11,7 @@
     "compile": "hardhat clean && hardhat compile",
     "test": "jest",
     "test:watch": "jest --watch",
-    "refresh": "node scripts/refresh.js"
+    "refresh": "node scripts/refresh-opensea-meta.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",

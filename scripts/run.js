@@ -1,8 +1,11 @@
 const { utils } = require("ethers");
 const hre = require("hardhat");
+require("dotenv").config();
+
+const { IPFS_URL } = process.env;
 
 async function main() {
-  const baseTokenURI = "ipfs://QmWnrp7EQUzJNcEPiYDNNw6XRZCv3XVMndBxVipTVUDsPr/";
+  const baseTokenURI = IPFS_URL || "";
 
   // Get owner/deployer's wallet address
   const [owner] = await hre.ethers.getSigners();
