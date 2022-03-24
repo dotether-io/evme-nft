@@ -33,7 +33,7 @@ contract EvmeNFTTop is ERC721Enumerable, Ownable {
     }
 
     function ownerMint(address receiver, Design series) public onlyOwner returns (uint tokenId) {
-        require(series != Design.d0 , "Invalid Design.");
+        require(series != Design.d0 , "Invalid Design");
 
         uint newTokenID = _tokenIds.current();
 
