@@ -32,22 +32,25 @@ contract EvmeNFTTop is ERC721Enumerable, Ownable {
         baseTokenURI = _baseTokenURI;
     }
 
-    function ownerMint(address receiver, Design series) public onlyOwner returns (uint tokenId) {
-        require(series != Design.d0 , "Invalid Design");
+    function ownerMint(address receiver, Design design) public onlyOwner returns (uint tokenId) {
+        require(design != Design.d0 , "Invalid Design");
+
+        uint total = totalSupply();
+
+        require(total < MAX_SUPPLY, "Reached the maximum number of NFTs");
+
+        require(designCounts[design] < MAX_PER_DESIGN, "Reached the maximum number of NFTs in this Design");
 
         uint newTokenID = _tokenIds.current();
 
-        require(newTokenID < MAX_SUPPLY, "Reached the maximum number of NFTs");
-
-        require(designCounts[series] < MAX_PER_DESIGN, "Reached the maximum number of NFTs in this Design");
 
         _safeMint(receiver, newTokenID);
 
-        // save token series list
-        tokenIdToDesign[newTokenID] = series;
+        // save token design list
+        tokenIdToDesign[newTokenID] = design;
 
-        // series count increment
-        designCounts[series]++;
+        // design count increment
+        designCounts[design]++;
 
         _tokenIds.increment();
 

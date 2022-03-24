@@ -104,7 +104,7 @@ describe("Minting process", function () {
     // check invalid design 0
     await expect(nft.ownerMint(client.address, 0)).rejects.toMatchObject(
       new Error(
-        `VM Exception while processing transaction: reverted with reason string 'Invalid Design.'`
+        `VM Exception while processing transaction: reverted with reason string 'Invalid Design'`
       )
     );
   });
