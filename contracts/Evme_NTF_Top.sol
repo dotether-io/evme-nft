@@ -13,10 +13,10 @@ contract EvmeNFTTop is ERC721Enumerable, Ownable {
     Counters.Counter private _tokenIds;
 
     uint public constant MAX_SUPPLY = 25;
-    uint public constant MAX_PER_SERIES = 5;
-    enum Series{ s0, s1, s2, s3, s4, s5 }
-    mapping(Series => uint) public seriesCounts;
-    mapping(uint => Series) public tokenIdToSeries;
+    uint public constant MAX_PER_DESIGN = 5;
+    enum Design{ d0, d1, d2, d3, d4, d5 }
+    mapping(Design => uint) public designCounts;
+    mapping(uint => Design) public tokenIdToDesign;
 
     string public baseTokenURI;
 
@@ -32,26 +32,43 @@ contract EvmeNFTTop is ERC721Enumerable, Ownable {
         baseTokenURI = _baseTokenURI;
     }
 
-    function ownerMint(address receiver, Series series) public onlyOwner returns (uint tokenId) {
-        require(series != Series.s0 , "Invalid Series.");
+    function ownerMint(address receiver, Design series) public onlyOwner returns (uint tokenId) {
+        require(series != Design.d0 , "Invalid Design.");
 
         uint newTokenID = _tokenIds.current();
 
         require(newTokenID < MAX_SUPPLY, "Reached the maximum number of NFTs");
 
-        require(seriesCounts[series] < MAX_PER_SERIES, "Reached the maximum number of NFTs in this Series");
+        require(designCounts[series] < MAX_PER_DESIGN, "Reached the maximum number of NFTs in this Design");
 
         _safeMint(receiver, newTokenID);
 
         // save token series list
-        tokenIdToSeries[newTokenID] = series;
+        tokenIdToDesign[newTokenID] = series;
 
         // series count increment
-        seriesCounts[series]++;
+        designCounts[series]++;
 
         _tokenIds.increment();
 
         return newTokenID;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory tierString;
+
+        if (uint8(tokenIdToDesign[tokenId]) == 1) tierString = "d1";
+        if (uint8(tokenIdToDesign[tokenId]) == 2) tierString = "d2";
+        if (uint8(tokenIdToDesign[tokenId]) == 3) tierString = "d3";
+        if (uint8(tokenIdToDesign[tokenId]) == 4) tierString = "d4";
+        if (uint8(tokenIdToDesign[tokenId]) == 5) tierString = "d5";
+
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0
+            ? string(abi.encodePacked(baseURI, tierString))
+            : '';
     }
 
     function tokensOfOwner(address _owner) public view returns (uint[] memory) {
